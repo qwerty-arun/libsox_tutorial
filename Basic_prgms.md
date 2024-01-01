@@ -20,3 +20,30 @@ int main(int argc,char *argv[])
 > 'argc' is the number of arguments we pass while executing.</br> If we execute like `./a.out <filename.c>`, then `argc` will hold the value '2', because two arguments are passed.</br>
 > 'argv' is a pointer to characters, in this case it is the arguments which we pass. The for loop is prints all the arguments which we pass.
 > `**argv` instead of `*argv[]` is perfectly correct as array itself is a pointer.</br>
+
+# Prgm2: sox_open_read and sox_format_t, dereferencing pointers and sox_close()
+```
+#include "sox.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
+int main(int argc, char **argv)
+{
+int ret = sox_init();
+    if (ret == 0) {
+	sox_format_t *handle = sox_open_read(argv[1], NULL, NULL, NULL);
+	printf("%s", handle->filename);
+	printf("%d", handle->encoding.encoding);
+	sox_close(handle);
+    }
+}
+```
+> If 'ret' has the value '0' which means sox library has been initialised, then create a pointer of `sox_format_t`.</br>
+> `sox_format_t` is actually a structure with various fields like filename, signal, encoding etc. and they are all of different data types. </br>
+> We are passing `argv[1]` to the function `sox_open_read` and `NULL` for the rest. `argv[1]` points to the filename which we pass as argument</br>.
+> `sox_open_read` expects 4 arguments: path, signal, encoding and filetype.Returns handle for the new session, or null on failure. </br>
+> We are just printing filename which we passed as argument during execution by using `handle->filename`. We are dereferencing the pointer.
+> Then we are printing values in an enumerator by using `handle->encoding.encoding`. Inside `sox_format_t`, there is another structure (nested structure) called `sox_encodinginfo_t` and in which `encoding` is another field of data type `enum`. </br>
+> If you execute `./a.out <filename>.mp3`, output will be 22, since mp3 files are associated with the value '22' inside the enum.</br>
+> `sox_close` closes an encoding/decoding sessions. Basically, freeing the pointer. It returns SOX_SUCCESS if successful.</br>
+
