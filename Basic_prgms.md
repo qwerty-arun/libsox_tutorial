@@ -47,3 +47,28 @@ int ret = sox_init();
 > If you execute `./a.out <filename>.mp3`, output will be 22, since mp3 files are associated with the value '22' inside the enum.</br>
 > `sox_close` closes an encoding/decoding sessions. Basically, freeing the pointer. It returns SOX_SUCCESS if successful.</br>
 
+# Prgm3: sox_signal_info_t and sox_open_write
+```
+# include "sox.h"
+# include <stdio.h>
+# include <stdlib.h>
+# include <assert.h>
+int main(int argc, char **argv)
+{
+	sox_format_t *in, *out;
+	assert(sox_init() == SOX_SUCCESS);
+	sox_signalinfo_t *sig_info;
+	assert(argc==3);
+	sig_info->rate=48000;
+	sig_info->channels=1;
+	sig_info->precision=16;
+	assert(in=sox_open_read(argv[1],sig_info,NULL,NULL));
+	assert(out=sox_open_write(argv[2],sig_info,NULL,NULL,NULL,NULL));
+	sox_close(out);
+	sox_close(in);
+}
+```
+> `sox_signalinfo_t` contains fields like rate, channels, precision etc. </br>
+> We want both input and output files to have same characteristics. Therefore making a common variable `sig_info` and giving values to its fields by dereferencing the pointers.</br>
+> We are passing `sig_info` as 2nd parameter in both read and write functions.</br>
+> `sox_open_write` accepts six parameters: path(required), signal(required), encoding, filetype, out of band and overwrite__permitted.</br>
