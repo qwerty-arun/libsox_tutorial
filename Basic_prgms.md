@@ -72,3 +72,34 @@ int main(int argc, char **argv)
 > We want both input and output files to have same characteristics. Therefore making a common variable `sig_info` and giving values to its fields by dereferencing the pointers.</br>
 > We are passing `sig_info` as 2nd parameter in both read and write functions.</br>
 > `sox_open_write` accepts six parameters: path(required), signal(required), encoding, filetype, out of band and overwrite__permitted.</br>
+
+# Prgm4: Understanding chains
+```
+#include "sox.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+int main(int argc, char **argv)
+{
+	assert(sox_init() == SOX_SUCCESS);
+	char *args[10];
+	sox_format_t *in, *out;
+	assert(argc==3);
+	assert(in=sox_open_read(argv[1],NULL,NULL,NULL));
+	assert(out=sox_open_write(argv[2],&in->signal,NULL,NULL,NULL,NULL));
+	sox_effects_chain_t * chain;
+	sox_effect_t * e;
+	chain = sox_create_effects_chain(&in->encoding,&out->encoding);
+	e=sox_create_effect(sox_find_effect("input"));
+	args[0]=(char*)in,assert(sox_effect_options(e,1,args)==SOX_SUCCESS);
+	assert(sox_add_effect(chain,e,&in->signal,&out->signal)==SOX_SUCCESS);
+	free(e);
+	sox_close(out);
+	sox_close(in);
+}
+```
+> Creating a pointer of type `sox_effects_chain_t` which is a structure which contains fields like effects, length, encoding info about input and output files.</br>
+> `sox_creating_effects_chain` are passed information about encoding (as arguments)of both input and output files and returns a pointer of type `sox_effects_chain_t`.</br>
+> First effect in chain has to be something that can source samples, therefore we find the effect "input" using `sox_find_effect` and then create that effect.</br>
+> Then we type cast the `in` pointer to `char*` and store value in `args[0]`.</br>
+> `sox_add_effect` adds the effect `input` to the effects chain. That is why we are passing information like chain, effect, signal info about input and output files.</br>
