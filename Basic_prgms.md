@@ -103,3 +103,30 @@ int main(int argc, char **argv)
 > First effect in chain has to be something that can source samples, therefore we find the effect "input" using `sox_find_effect` and then create that effect.</br>
 > Then we type cast the `in` pointer to `char*` and store value in `args[0]`.</br>
 > `sox_add_effect` adds the effect `input` to the effects chain. That is why we are passing information like chain, effect, signal info about input and output files.</br>
+
+# Prgm5: Creating files using loops in a bash script
+```
+#! /usr/bin/bash
+sample_rate=48000 
+channels=2 
+duration=10 
+no_of_bits_per_sample=16 
+for rate in {44000..48000..2000}
+do
+   for bit_per_sample in {16..32..16}
+   do
+     for channels in {1..2}
+     do
+       for freq in {8000..16000..2000}
+       do
+  	   c="_"
+           file_name=$rate$c$bit_per_sample$c$channels$c$freq
+           sox -V -r $rate -n -b $bit_per_sample -c $channels sawtooth$file_name.wav synth 10 sawtooth $freq vol 20 dB 
+	   echo "sawtooth$file_name.wav, sawtooth, $rate, $bit_per_sample, $channels, 10, 20dB" >> sound_files.csv; \
+	done 
+     done 
+   done 
+done
+```
+> Used four different loops for varying four parameters: sample rate, bit per sample, no. of channels and frequency of the wave
+> Then information of every file created (like file name, wave type, sample rate etc.) is appended to a `csv` file called `sound_files.csv` in my case.
