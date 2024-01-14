@@ -128,5 +128,5 @@ do
    done 
 done
 ```
-> Used four different loops for varying four parameters: sample rate, bit per sample, no. of channels and frequency of the wave
-> Then information of every file created (like file name, wave type, sample rate etc.) is appended to a `csv` file called `sound_files.csv` in my case.
+> Used four different loops for varying four parameters: sample rate, bit per sample, no. of channels and frequency of the wave.</br>
+> Then information of every file created (like file name, wave type, sample rate etc.) is appended to a `csv` file called `sound_files.csv` in my case.</br>
